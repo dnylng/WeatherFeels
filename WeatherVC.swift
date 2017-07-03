@@ -27,6 +27,9 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        // Testing if constants are accessible
+        print("Current URL: " + CURRENT_WEATHER_URL)
     }
     
     // Number of columns
