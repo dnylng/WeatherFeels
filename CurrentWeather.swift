@@ -6,7 +6,7 @@
 //  Copyright © 2017 dnylng. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import Alamofire
 
 // Current weather object w/ encapsulated vars
@@ -51,4 +51,16 @@ class CurrentWeather {
         }
         return _currentTemp
     }
+    
+    func downloadWeatherDetails(completed: DownloadComplete) {
+        // Alamofire download
+        let currentWeatherURL = URL(string: CURRENT_WEATHER_URL)!
+        Alamofire.request(currentWeatherURL).responseJSON {
+            response in
+            print("Response: ")
+            print(response)
+        }
+        completed()
+    }
+    
 }
