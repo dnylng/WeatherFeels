@@ -10,7 +10,7 @@ import Foundation
 import CoreLocation
 import Alamofire
 
-class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
 
     @IBOutlet weak var dateLbl: UILabel!
     
@@ -24,18 +24,28 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     
+    let locationManager = CLLocationManager()
+    var currentLocation: CLLocation!
+    
     var currentWeather: CurrentWeather!
     var forecast: Forecast!
     var forecasts = [Forecast]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        locationAuthStatus()
+        
+        // Tell the location manager how we want it to work
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startMonitoringSignificantLocationChanges()
         
         tableView.delegate = self
         tableView.dataSource = self
         
-        // Testing if constants are accessible
-        print("Current URL: " + CURRENT_WEATHER_URL)
+//        Testing if constants are accessible
+//        print("Current URL: " + CURRENT_WEATHER_URL)
         
         currentWeather = CurrentWeather()
         currentWeather.downloadWeatherDetails {
@@ -43,6 +53,20 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 // Setup UI to download data
                 self.updateMainUI()
             }
+        }
+    }
+    
+    // Did the user allow or deny location usage?
+    func locationAuthStatus() {
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+            currentLocation = locationManager.location
+            Location.sharedIntance.latitude = currentLocation.coordinate.latitude
+            Location.sharedIntance.longitude = currentLocation.coordinate.longitude
+//            print("Current Location: (\(currentLocation.coordinate.latitude), \(currentLocation.coordinate.longitude))")
+//            print("Singleton Location: (\(Location.sharedIntance.latitude!), \(Location.sharedIntance.longitude!))")
+        } else {
+            locationManager.requestWhenInUseAuthorization()
+            locationAuthStatus()
         }
     }
     
@@ -79,8 +103,7 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // Update the forecast
     func downloadForecastData(completed: @escaping DownloadComplete) {
         // Downloading forecast weather data for TableView
-        let forecastURL = URL(string: FORECAST_URL)!
-        Alamofire.request(forecastURL).responseJSON {
+        Alamofire.request(FORECAST_URL).responseJSON {
             response in
 //            print(response)
             let result = response.result
