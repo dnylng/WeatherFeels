@@ -22,7 +22,9 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     
-    var currentWeather = CurrentWeather()
+    var currentWeather: CurrentWeather!
+    var forecast: Forecast!
+    var forecasts = [Forecast]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,8 +35,11 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // Testing if constants are accessible
         print("Current URL: " + CURRENT_WEATHER_URL)
         
+        currentWeather = CurrentWeather()
+        forecast = Forecast()
         currentWeather.downloadWeatherDetails {
             // Setup UI to download data
+            self.updateMainUI()
         }
     }
     
@@ -52,6 +57,36 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "weatherCell", for: indexPath)
         return cell
+    }
+    
+    // Update the UI w/ the new data
+    func updateMainUI() {
+        dateLbl.text = currentWeather.date
+        currentTempLbl.text = currentWeather.currentTemp
+        currentWeatherTypeLbl.text = currentWeather.weatherType
+        locationLbl.text = currentWeather.cityName
+        currentWeatherImg.image = UIImage(named: currentWeather.weatherType)
+    }
+    
+    // Update the forecast
+    func downloadForecastData(comepleted: @escaping DownloadComplete) {
+        // Downloading forecast weather data for TableView
+        let forecastURL = URL(string: FORECAST_URL)!
+        Alamofire.request(forecastURL).responseJSON {
+            response in
+            let result = response.result
+            
+            // Access the dictionary of the forecast
+            if let dict = result.value as? Dictionary<String, AnyObject> {
+                if let list = dict["list"] as? [Dictionary<String, AnyObject>] {
+                    // For every forecast I find, add it into another dict and put that in an array
+                    for obj in list {
+                        let forecast = Forecast(weatherDict: obj)
+                        self.forecasts.append(forecast)
+                    }
+                }
+            }
+        }
     }
     
 }

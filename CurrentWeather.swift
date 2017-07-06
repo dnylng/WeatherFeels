@@ -11,10 +11,10 @@ import Alamofire
 
 // Current weather object w/ encapsulated vars
 class CurrentWeather {
-    private var _cityName: String!
-    private var _date: String!
-    private var _weatherType: String!
-    private var _currentTemp: Double!
+    var _cityName: String!
+    var _date: String!
+    var _weatherType: String!
+    var _currentTemp: Double!
     
     var cityName: String {
         if _cityName == nil {
@@ -45,14 +45,15 @@ class CurrentWeather {
         return _weatherType
     }
     
-    var currentTemp: Double {
+    // When accessed, it'll be a string instead of double.
+    var currentTemp: String {
         if _currentTemp == nil {
             _currentTemp = 0.0
         }
-        return _currentTemp
+        return String(format: "%.1f°", _currentTemp)
     }
     
-    func downloadWeatherDetails(completed: DownloadComplete) {
+    func downloadWeatherDetails(completed: @escaping DownloadComplete) {
         // Alamofire download
         let currentWeatherURL = URL(string: CURRENT_WEATHER_URL)!
         Alamofire.request(currentWeatherURL).responseJSON {
@@ -81,14 +82,14 @@ class CurrentWeather {
                         // Convert from kelvins to farenheit
                         let kelvinToFarenheit = Double(round(10 * ((currentTemp) * (9/5) - 459.67)/10))
                         self._currentTemp = kelvinToFarenheit
-                        print("Current Temp: \(self._currentTemp!)")
+                        print("Current Temp: \(self._currentTemp!)°")
                     }
                 }
             }
 //            print("Response: ")
 //            print(response)
+            completed()
         }
-        completed()
     }
     
 }
