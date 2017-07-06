@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 import Alamofire
 
 class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -52,13 +53,18 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // Number of rows, 6 other days in a week
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        return forecasts.count
     }
     
     // Create a reusable cell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "weatherCell", for: indexPath)
-        return cell
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "weatherCell", for: indexPath) as? WeatherCell {
+            let forecast = forecasts[indexPath.row]
+            cell.configureCell(forecast: forecast)
+            return cell
+        } else {
+            return WeatherCell()
+        }
     }
     
     // Update the UI w/ the new data
@@ -87,6 +93,8 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         let forecast = Forecast(weatherDict: obj)
                         self.forecasts.append(forecast)
                     }
+                    self.forecasts.remove(at: 0)
+                    self.tableView.reloadData()
                 }
             }
             completed()
