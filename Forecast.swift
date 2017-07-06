@@ -51,14 +51,12 @@ class Forecast {
             
             // Grab the low temp from list dictionary
             if let min = temp["min"] as? Double {
-                let kelvinToFarenheit = Double(round(10 * ((min) * (9/5) - 459.67)/10))
-                self._lowTemp = kelvinToFarenheit
+                self._lowTemp = kelvinToFahrenheit(min)
             }
             
             // Grab the high temp from list dictionary
             if let max = temp["max"] as? Double {
-                let kelvinToFarenheit = Double(round(10 * ((max) * (9/5) - 459.67)/10))
-                self._highTemp = kelvinToFarenheit
+                self._highTemp = kelvinToFahrenheit(max)
             }
         }
         
@@ -75,10 +73,6 @@ class Forecast {
         if let date = weatherDict["dt"] as? Double {
             // Convert the date
             let unixConvertedDate = Date(timeIntervalSince1970: date)
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .full
-            dateFormatter.dateFormat = "EEEE"
-            dateFormatter.timeStyle = .none
             self._date = unixConvertedDate.dayOfTheWeek()
         }
     }
