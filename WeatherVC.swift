@@ -6,7 +6,8 @@
 //  Copyright © 2017 dnylng. All rights reserved.
 //
 
-import UIKit
+import Foundation
+import Alamofire
 
 class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -36,10 +37,11 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         print("Current URL: " + CURRENT_WEATHER_URL)
         
         currentWeather = CurrentWeather()
-        forecast = Forecast()
         currentWeather.downloadWeatherDetails {
-            // Setup UI to download data
-            self.updateMainUI()
+            self.downloadForecastData {
+                // Setup UI to download data
+                self.updateMainUI()
+            }
         }
     }
     
@@ -69,11 +71,12 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     // Update the forecast
-    func downloadForecastData(comepleted: @escaping DownloadComplete) {
+    func downloadForecastData(completed: @escaping DownloadComplete) {
         // Downloading forecast weather data for TableView
         let forecastURL = URL(string: FORECAST_URL)!
         Alamofire.request(forecastURL).responseJSON {
             response in
+//            print(response)
             let result = response.result
             
             // Access the dictionary of the forecast
@@ -86,6 +89,7 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     }
                 }
             }
+            completed()
         }
     }
     

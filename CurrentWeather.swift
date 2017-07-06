@@ -11,10 +11,11 @@ import Alamofire
 
 // Current weather object w/ encapsulated vars
 class CurrentWeather {
-    var _cityName: String!
-    var _date: String!
-    var _weatherType: String!
-    var _currentTemp: Double!
+    
+    private var _cityName: String!
+    private var _date: String!
+    private var _weatherType: String!
+    private var _currentTemp: Double!
     
     var cityName: String {
         if _cityName == nil {
@@ -62,6 +63,7 @@ class CurrentWeather {
             
             // The large/original dictionary
             if let dict = result.value as? Dictionary<String, AnyObject> {
+                
                 // Grab the key, "name", in the dictionary
                 if let name = dict["name"] as? String {
                     self._cityName = name.capitalized
@@ -79,6 +81,7 @@ class CurrentWeather {
                 // Grab the key, "main", in the dictionary
                 if let main = dict["main"] as? Dictionary<String, AnyObject> {
                     if let currentTemp = main["temp"] as? Double {
+                        
                         // Convert from kelvins to farenheit
                         let kelvinToFarenheit = Double(round(10 * ((currentTemp) * (9/5) - 459.67)/10))
                         self._currentTemp = kelvinToFarenheit
