@@ -24,6 +24,8 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, C
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var wallpaper: UIImageView!
+    
     let locationManager = CLLocationManager()
     var currentLocation: CLLocation!
     
@@ -33,12 +35,14 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, C
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        locationAuthStatus()
+        //let rand = arc4random_uniform(3)
+        //wallpaper.image = UIImage(named: "Wallpaper\(rand)")
         
         // Tell the location manager how we want it to work
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
+        locationAuthStatus()
         locationManager.startMonitoringSignificantLocationChanges()
         
         tableView.delegate = self
