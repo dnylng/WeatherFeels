@@ -35,8 +35,8 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, C
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //let rand = arc4random_uniform(3)
-        //wallpaper.image = UIImage(named: "Wallpaper\(rand)")
+        let rand = arc4random_uniform(3)
+        wallpaper.image = UIImage(named: "Wallpaper\(rand)")
         
         // Tell the location manager how we want it to work
         locationManager.delegate = self
